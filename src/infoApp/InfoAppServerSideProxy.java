@@ -63,26 +63,6 @@ public class InfoAppServerSideProxy{
                             infoApp.get_temp(String.class.cast(receivedParams[0])) + "");
                     }
             }
-            /*try {
-                method = infoApp.getClass().getMethod(methodName, null);
-                Class[] paramTypes = method.getParameterTypes();
-                System.out.println(methodName);
-                //Class[] paramTypes = method.getParameterTypes();
-                //if(paramTypes.length == receivedParams.length) {
-                   *//* for (int i = 0; i < paramTypes.length; i++) {
-                        if(!paramTypes[i].getSimpleName().equals(receivedParams[i].getClass().getSimpleName()))
-
-                    }*//*
-                    response = method.invoke(infoApp, receivedParams);
-                //}
-
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-                return new MethodInvocationMessage("InfoAppServer", methodName, "Can't find the method");
-            } catch (IllegalAccessException | InvocationTargetException e ) {
-                e.printStackTrace();
-                return new MethodInvocationMessage("InfoAppServer", methodName, "Can't invoke the method");
-            }*/
             return new MethodInvocationMessage("InfoAppServer", methodName, "Can't find the method");
         }
 

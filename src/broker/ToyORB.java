@@ -56,11 +56,11 @@ public class ToyORB {
      * @return will return null in case of failure to load proxy, otherwise returns the client proxy
      */
     private static Object clientProxyFactory(String className, String serverAddress){
-        /*ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Class<?> proxyClass = Class.forName(className, true, loader);*/
         String proxyName = className.replaceFirst("Impl", "ClientSideProxy");
         System.out.println(proxyName);
         try {
+            //ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            //Class proxyClass = loader.loadClass(proxyName);
             Class proxyClass = Class.forName(proxyName);
             Constructor constructor = proxyClass.getConstructor(String.class);
             Object obj = constructor.newInstance(serverAddress);
@@ -82,14 +82,16 @@ public class ToyORB {
         String clientProxyName = serverProxyName.replaceFirst("Server", "Client");
 
         proxyFileGenerator = new ProxyFileGenerator(appObj);
-        if(!proxyFileGenerator.generateServerProxyFile(serverProxyName))
+        if(!proxyFileGenerator.generateServerProxyFile(serverProxyName.replaceAll(".+\\.", "")))
             System.out.println("Server Proxy not generated correctly");
-        if(!proxyFileGenerator.generateClientProxyFile(clientProxyName))
+        if(!proxyFileGenerator.generateClientProxyFile(clientProxyName.replaceAll(".+\\.", "")))
         System.out.println("Server Proxy not generated correctly");
 
         String[] addr = address.split(":");
         Address serverAddress = new Entry(addr[0], Integer.parseInt(addr[1]));
         try {
+            //ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            //Class proxyClass = loader.loadClass(serverProxyName);
             Class proxyClass = Class.forName(serverProxyName);
             Constructor constructor = proxyClass.getConstructor(Address.class, appObj.getClass());
             Object obj = constructor.newInstance(serverAddress, appObj);

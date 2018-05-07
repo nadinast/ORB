@@ -20,14 +20,14 @@ public class InfoAppClientSideProxy implements InfoApp{
     }
 
     @Override
-    public String get_road_info(int road_ID) {
+    public String get_road_info(int param1) {
 
-        return this.invokeServerMethod("get_road_info", road_ID + "");
+        return this.invokeServerMethod("get_road_info", param1 + "");
     }
 
     @Override
-    public int get_temp(String city) {
-        return Integer.parseInt(this.invokeServerMethod("get_temp", city));
+    public int get_temp(String param1) {
+        return Integer.parseInt(this.invokeServerMethod("get_temp", param1));
     }
 
     private String invokeServerMethod(String methodName, String params){

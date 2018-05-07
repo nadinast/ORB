@@ -11,12 +11,12 @@ public final class Utils {
             "import ByteCommunication.Registry.Entry;\n" +
             "import ByteCommunication.RequestReply.Requestor;\n" +
             "\n" +
-            "public class {CLASS_NAME} implements {OBJECT_INTERFACE}{\n" +
+            "public class {FILE_NAME} implements {OBJECT_INTERFACE}{\n" +
             "    private Requestor req = new Requestor(\"clientProxy-to-serverProxy\");\n" +
             "    private Address serverAddress;\n" +
             "    private MethodMarshaller marshaller = new MethodMarshaller();\n" +
             "\n" +
-            "    public {CLASS_NAME}(String serverAddress){\n" +
+            "    public {FILE_NAME}(String serverAddress){\n" +
             "        String[] address = serverAddress.split(\":\");\n" +
             "        int port = Integer.parseInt(address[1]);\n" +
             "        Address destAddress = new Entry(address[0], port);\n" +
@@ -44,14 +44,14 @@ public final class Utils {
 
     private static final String CLIENT_METHOD_TEMPLATE_STRING =
             "    @Override\n" +
-            "    public String {METHOD_NAME}({PARAM_TYPE} {PARAM_NAME}{OPTIONAL_TYPE} {OPTIONAL_NAME}) {\n" +
-            "        return this.invokeServerMethod(\"{METHOD_NAME}\", {PARAM_NAME} + \"\");\n" +
+            "    public String {METHOD_NAME}({PARAM_TYPE} param1{OPTIONAL_TYPE} {OPTIONAL_NAME}) {\n" +
+            "        return this.invokeServerMethod(\"{METHOD_NAME}\", param1{OPTIONAL_NAME2} + \"\");\n" +
             "    }\n";
 
     private static final String CLIENT_METHOD_TEMPLATE_NUMBER =
             "    @Override\n" +
-                    "    public {RETURN_TYPE} {METHOD_NAME}({PARAM_TYPE} {PARAM_NAME}{OPTIONAL_TYPE} {OPTIONAL_NAME}) {\n" +
-                    "        return {RETURN_TYPE_CLASS}.parse{RETURN_TYPE_WITH_CAPITAL_INITIAL}(this.invokeServerMethod(\"{METHOD_NAME}\", {PARAM_NAME}{OPTIONAL_NAME}));\n" +
+                    "    public {RETURN_TYPE} {METHOD_NAME}({PARAM_TYPE} param1{OPTIONAL_TYPE} {OPTIONAL_NAME}) {\n" +
+                    "        return {RETURN_TYPE_CLASS}.parse{RETURN_TYPE_WITH_CAPITAL_INITIAL}(this.invokeServerMethod(\"{METHOD_NAME}\", param1{OPTIONAL_NAME2} + \"\"));\n" +
                     "    }\n";
 
 
@@ -69,13 +69,13 @@ public final class Utils {
             "import java.lang.reflect.InvocationTargetException;\n" +
             "import java.lang.reflect.Method;\n" +
             "\n" +
-            "public class {CLASS_NAME}{\n" +
+            "public class {FILE_NAME}{\n" +
             "    private final Address serverAddress;\n" +
             "    private Replyer rep;\n" +
             "    private {OBJECT_INTERFACE}ResponseTransformer appTransformer = new {OBJECT_INTERFACE}ResponseTransformer();\n" +
-            "    private InfoApp infoApp;\n" +
+            "    private {OBJECT_INTERFACE} app;\n" +
             "\n" +
-            "    public {CLASS_NAME}(Address serverAddress, {OBJECT_INTERFACE}Impl app){\n" +
+            "    public {FILE_NAME}(Address serverAddress, {CLASS_NAME} app){\n" +
             "        this.serverAddress = serverAddress;\n" +
             "        this.app = app;\n" +
             "        rep = new Replyer(this.getClass().getSimpleName(), serverAddress);\n" +
@@ -107,23 +107,7 @@ public final class Utils {
             "            System.out.println(\"ServerSideProxy received \" + msg.data + \" and \" + methodName + \" from \" + msg.sender);\n" +
             "            Object[] receivedParams = parseRawData(msg.data);\n" +
             "\n" +
-            "            if(methodName.equals(\"get_road_info\"))\n" +
-            "                if (receivedParams.length >= 1) {\n" +
-            "                    System.out.println(\"in here\");\n" +
-            "                    System.out.println(Integer.class.cast(receivedParams[0]));\n" +
-            "                    return new MethodInvocationMessage(\"InfoServerApp\",\n" +
-            "                            methodName,\n" +
-            "                            infoApp.get_road_info(Integer.class.cast(receivedParams[0])));\n" +
-            "                }\n" +
-            "            if(methodName.equals(\"get_temp\\u0000\")){\n" +
-            "                if(receivedParams.length >= 1) {\n" +
-            "                    System.out.println(\"in here\");\n" +
-            "                    System.out.println(String.class.cast(receivedParams[0]));\n" +
-            "                    return new MethodInvocationMessage(\"InfoServerApp\",\n" +
-            "                            methodName,\n" +
-            "                            infoApp.get_temp(String.class.cast(receivedParams[0])) + \"\");\n" +
-            "                    }\n" +
-            "            }\n" +
+            "{SERVER_INVOCATION_TEMPLATE}"+
             "\n" +
             "            return new MethodInvocationMessage(\"InfoAppServer\", methodName, \"Can't find the method\");\n" +
             "        }\n" +
@@ -164,30 +148,34 @@ public final class Utils {
             "\n" +
             "\n";
 
-    private static final String SERVER_METHOD_INVOCATION_TEMPLATE =
-            "            if(methodName.equals(\"{METHOD_NAME}\u0000\"))\n" +
+    private static final String SERVER_INVOCATION_TEMPLATE =
+                    "            if(methodName.equals(\"{METHOD_NAME}\u0000\"))\n" +
                     "                if (receivedParams.length >= 1) {\n" +
                     "                    return new MethodInvocationMessage(\"{OBJECT_INTERFACE}Server\",\n" +
                     "                            methodName,\n" +
-                    "                            app.{METHOD_NAME}({PARAM_TYPE_CLASS}.class.cast(receivedParams[{INDEX}]){OPTIONAL}));\n" +
+                    "                            app.{METHOD_NAME}({PARAM_TYPE_CLASS}.class.cast(receivedParams[{INDEX}]){OPTIONAL}) + \"\");\n" +
                     "                }\n";
+
+
 
     public static String getServerProxyTemplate() {
         return SERVER_PROXY_TEMPLATE;
     }
 
-
     public static String getClientProxyTemplate(){
         return CLIENT_PROXY_TEMPLATE;
     }
-
 
     public static String getClientMethodTemplateString() {
         return CLIENT_METHOD_TEMPLATE_STRING;
     }
 
-
     public static String getClientMethodTemplateNumber() {
         return CLIENT_METHOD_TEMPLATE_NUMBER;
     }
+
+    public static String getServerInvocationTemplate() {
+        return SERVER_INVOCATION_TEMPLATE;
+    }
+
 }
